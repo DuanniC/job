@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel de Vagas — Duanni & Alan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2fd; --card:#ffffff; --ink:#1b1740; --muted:#6f6b90;
+  --brand:#5b3fd6; --brand-2:#7c5cf5; --brand-soft:#efeaff;
+  --pink:#fdeef5; --line:#e7e6f3; --radius:18px; --shadow:0 10px 30px -12px rgba(50,35,120,.28);
+}
+[data-person="alan"]{--brand:#0f7f96;--brand-2:#17a2bd;--brand-soft:#e2f6fa;--bg:#ecf6f9}
+*{box-sizing:border-box}
+body{margin:0;font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);transition:background .25s}
+button,input,select,textarea{font:inherit}
+.layout{display:flex;min-height:100vh}
+aside{width:250px;flex:0 0 250px;background:linear-gradient(180deg,var(--brand),color-mix(in oklab,var(--brand) 60%,#1b1740));color:#fff;padding:26px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:8px}
+aside h1{font-size:20px;letter-spacing:3px;margin:0 8px 8px}
+.sec{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.55);margin:16px 10px 4px;font-weight:700}
+.navbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:transparent;border:0;color:#eae6ff;padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+.navbtn:hover{background:rgba(255,255,255,.12)}
+.navbtn.active{background:#fff;color:var(--brand)}
+.navbtn .badge{background:rgba(255,255,255,.2);border-radius:999px;padding:1px 9px;font-size:12px}
+.navbtn.active .badge{background:var(--brand-soft);color:var(--brand)}
+main{flex:1;padding:26px 30px 60px;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:20px}
+.top h2{margin:0;font-size:26px}
+.search{display:flex;background:#fff;border-radius:999px;padding:6px 6px 6px 16px;box-shadow:var(--shadow);gap:8px}
+.search input{border:0;outline:0;width:200px;background:transparent}
+.btn{border:0;border-radius:12px;padding:11px 18px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.tab{flex:1;min-width:220px;display:flex;align-items:center;gap:12px;background:#fff;border:2px solid transparent;border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);cursor:pointer;text-align:left}
+.tab.on{border-color:var(--brand)}
+.tab .ava{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:var(--brand-soft)}
+.tab .n{font-size:20px;font-weight:800;line-height:1.1}
+.tab .l{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:8px 15px;cursor:pointer;font-weight:600;font-size:13px}
+.chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.jobs{display:grid;gap:14px}
+.job{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:linear-gradient(90deg,var(--brand-soft),#fff);display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}
+.job h4{margin:0 0 6px;font-size:16px}
+.meta{color:var(--muted);font-size:13.5px;line-height:1.7}
+.right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:170px}
+.st{border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.side h3{margin:0 0 12px;font-size:17px}
+.up{border-left:3px solid var(--brand);padding:8px 0 8px 12px;margin-bottom:12px}
+.up b{display:block}
+.up span{color:var(--muted);font-size:13px}
+.empty{color:var(--muted);font-size:14px;padding:14px 0;text-align:center}
+dialog{border:0;border-radius:20px;padding:0;max-width:660px;width:94vw;box-shadow:0 30px 80px -20px rgba(30,20,80,.45)}
+dialog::backdrop{background:rgba(27,23,64,.45)}
+.modal{padding:24px}
+.modal h3{margin:0 0 4px}
+.modal p.hint{margin:0 0 16px;color:var(--muted);font-size:13.5px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:12px 0 5px}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;outline:0;background:#fbfaff}
+input:focus,select:focus{border-color:var(--brand-2)}
+.fetchrow{display:flex;gap:8px}
+.fetchrow input{flex:1}
+.status-msg{font-size:13px;margin-top:8px;color:var(--muted);min-height:18px}
+.modal-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.owner{background:var(--brand-soft);color:var(--brand);border-radius:11px;padding:11px 13px;font-weight:700}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .layout{flex-direction:column}
+  aside{width:100%;height:auto;position:static;flex-direction:row;overflow-x:auto;gap:6px;padding:14px;align-items:center}
+  aside h1,.sec{display:none}
+  main{padding:18px}
+  .row{grid-template-columns:1fr}
+  .right{align-items:flex-start}
+}
+</style>
+</head>
+<body data-person="me">
+<div class="layout">
+  <aside>
+    <h1>VAGAS</h1>
+    <div class="sec">PAINEL</div>
+    <button class="navbtn" data-person-btn="me">👩 Duanni <span class="badge" id="c-me">0</span></button>
+    <button class="navbtn" data-person-btn="alan">👨 Alan <span class="badge" id="c-alan">0</span></button>
+    <div class="sec">FILTROS</div>
+    <button class="navbtn active" data-f="todos">Todas <span class="badge" id="c-todas">0</span></button>
+    <button class="navbtn" data-f="Entrevista">Entrevistas <span class="badge" id="c-ent">0</span></button>
+    <button class="navbtn" data-f="Em análise">Em análise <span class="badge" id="c-ana">0</span></button>
+    <button class="navbtn" data-f="final">Finalizadas <span class="badge" id="c-fin">0</span></button>
+  </aside>
+
+  <main>
+    <div class="top">
+      <h2 id="title">Painel de Duanni</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="search"><input id="q" placeholder="Buscar vaga, empresa, cidade..."></div>
+        <button class="btn" id="new">+ Nova candidatura</button>
+        <button class="btn ghost sm" id="export">Exportar</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" data-person-btn="me"><div class="ava">👩</div><div><div class="n" id="n-me">0</div><div class="l">Duanni — minhas candidaturas</div></div></button>
+      <button class="tab" data-person-btn="alan"><div class="ava">👨</div><div><div class="n" id="n-alan">0</div><div class="l">Alan — candidaturas dele</div></div></button>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="chips" id="chips"></div>
+        <div class="jobs" id="jobs"></div>
+      </div>
+      <div>
+        <div class="card side" style="margin-bottom:18px">
+          <h3>📅 Próximas entrevistas</h3>
+          <div id="upcoming"></div>
+        </div>
+        <div class="card side">
+          <h3>📊 Resumo por status</h3>
+          <div id="summary"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<dialog id="dlg"><form method="dialog" class="modal" id="form">
+  <h3 id="dlg-title">Nova candidatura</h3>
+  <p class="hint">Cole o link da vaga e clique em <b>Ler página</b>. Se algum campo não vier (sites como Catho/InfoJobs bloqueiam leitura automática), preencha ou corrija manualmente antes de salvar.</p>
+
+  <label>👤 Painel</label>
+  <div class="owner" id="f-owner">👩 Duanni</div>
+
+  <label>🔗 Link original da vaga</label>
+  <div class="fetchrow">
+    <input id="f-url" type="url" placeholder="https://br.indeed.com/viewjob?jk=...">
+    <button type="button" class="btn" id="fetch">Ler página</button>
+  </div>
+  <div class="status-msg" id="fetchmsg"></div>
+
+  <div class="row">
+    <div><label>🏷️ Nome da vaga *</label><input id="f-title" required></div>
+    <div><label>🏢 Empresa</label><input id="f-company"></div>
+  </div>
+  <div class="row">
+    <div><label>📍 Localização</label><input id="f-loc" placeholder="Belo Horizonte/MG"></div>
+    <div><label>💰 Salário</label><input id="f-salary" placeholder="R$ 2.800 – R$ 3.500"></div>
+  </div>
+  <div class="row">
+    <div><label>💼 Tipo de contratação</label>
+      <input id="f-type" list="types" placeholder="CLT, PJ, Estágio...">
+      <datalist id="types"><option>CLT</option><option>PJ</option><option>Estágio</option><option>Temporário</option><option>Freelance</option><option>Home office</option><option>Híbrido</option><option>Presencial</option></datalist>
+    </div>
+    <div><label>🌐 Plataforma de origem</label><input id="f-platform" list="plats">
+      <datalist id="plats"><option>Indeed</option><option>InfoJobs</option><option>Catho</option><option>Sólides</option><option>LinkedIn</option><option>Vagas.com</option><option>Gupy</option><option>Site da empresa</option></datalist>
+    </div>
+  </div>
+  <div class="row">
+    <div><label>📅 Data da candidatura</label><input id="f-date" type="date"></div>
+    <div><label>📌 Status</label><select id="f-status"></select></div>
+  </div>
+  <div class="row">
+    <div><label>🗓️ Data/hora da entrevista (se houver)</label><input id="f-interview" type="datetime-local"></div>
+    <div><label>📝 Observações</label><input id="f-notes" placeholder="Contato do RH, testes pendentes..."></div>
+  </div>
+
+  <div class="modal-actions">
+    <button type="button" class="btn ghost sm" id="del" style="color:#dc2626">Excluir</button>
+    <div style="display:flex;gap:8px">
+      <button type="button" class="btn ghost" id="cancel">Cancelar</button>
+      <button type="submit" class="btn">Salvar vaga</button>
+    </div>
+  </div>
+</form></dialog>
+
+<script>
+// ================================================================
+// 🔧 Cole aqui o Bin ID e a Master Key que você pegou no JSONBin.io
+// ================================================================
+const BIN_ID="6a95c9c8da38895dfe2774c6";
+const MASTER_KEY="$2a$10$/kQFQFwoTsiJVzWAzDam0OGSBs8OFoK/REFReE74lP4zvvo56Q9Pe";
+const BIN_URL=`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+const STATUSES=["Candidatou","Em análise","Entrevista","Aprovado","Reprovado","Sem retorno"];
+const COLORS={"Candidatou":"#2563eb","Em análise":"#d97706","Entrevista":"#7c3aed","Aprovado":"#16a34a","Reprovado":"#dc2626","Sem retorno":"#6b7280"};
+const PEOPLE={me:{label:"Duanni",emoji:"👩"},alan:{label:"Alan",emoji:"👨"}};
+let jobs=[]; // carregado do JSONBin em loadJobs(), lá embaixo
+let person=localStorage.getItem("painel-vagas-person")||"me";
+let filter="todos", editing=null, search="";
+const $=s=>document.querySelector(s);
+
+// Grava a lista inteira de vagas no JSONBin (substitui o antigo localStorage.setItem)
+const save=async()=>{
+  try{
+    await fetch(BIN_URL,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":MASTER_KEY},body:JSON.stringify(jobs)});
+  }catch(e){console.error("Erro ao salvar no JSONBin:",e);}
+};
+// Carrega a lista de vagas do JSONBin (chamado uma vez no final do arquivo)
+async function loadJobs(){
+  try{
+    const r=await fetch(BIN_URL+"/latest",{headers:{"X-Master-Key":MASTER_KEY}});
+    const d=await r.json();
+    const rec=d.record;
+    jobs=(Array.isArray(rec)?rec:[]).map(j=>({...j,who:j.who==="noivo"?"alan":j.who}));
+  }catch(e){console.error("Erro ao carregar do JSONBin:",e);}
+  render();
+}
+const fmt=d=>d?new Date(d+"T00:00:00").toLocaleDateString("pt-BR"):"—";
+const esc=s=>String(s??"").replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+const mine=()=>jobs.filter(j=>j.who===person);
+
+const CHIPS=[["todos","Todas"],["Candidatou","Candidatou"],["Em análise","Em análise"],["Entrevista","Entrevistas"],["final","Finalizadas"]];
+$("#chips").innerHTML=CHIPS.map(([k,l])=>`<button class="chip" data-f="${k}">${l}</button>`).join("");
+$("#f-status").innerHTML=STATUSES.map(s=>`<option>${s}</option>`).join("");
+
+document.addEventListener("click",e=>{
+  const f=e.target.closest("[data-f]"), p=e.target.closest("[data-person-btn]");
+  if(f){filter=f.dataset.f;render();}
+  if(p){person=p.dataset.personBtn;localStorage.setItem("painel-vagas-person",person);filter="todos";render();}
+});
+$("#q").oninput=e=>{search=e.target.value.toLowerCase();render();};
+
+function match(j){
+  if(search && !(`${j.title} ${j.company} ${j.loc} ${j.platform}`.toLowerCase().includes(search))) return false;
+  if(filter==="todos")return true;
+  if(filter==="final")return ["Aprovado","Reprovado","Sem retorno"].includes(j.status);
+  return j.status===filter;
+}
+
+function render(){
+  document.body.dataset.person=person;
+  const p=PEOPLE[person];
+  $("#title").textContent=`Painel de ${p.label}`;
+  document.querySelectorAll("[data-f]").forEach(c=>c.classList.toggle("active",c.dataset.f===filter));
+  document.querySelectorAll("[data-person-btn]").forEach(b=>{
+    const on=b.dataset.personBtn===person;
+    b.classList.toggle("active",on&&b.classList.contains("navbtn"));
+    b.classList.toggle("on",on&&b.classList.contains("tab"));
+  });
+
+  const all=mine();
+  $("#n-me").textContent=jobs.filter(j=>j.who==="me").length;
+  $("#n-alan").textContent=jobs.filter(j=>j.who==="alan").length;
+  $("#c-me").textContent=jobs.filter(j=>j.who==="me").length;
+  $("#c-alan").textContent=jobs.filter(j=>j.who==="alan").length;
+  $("#c-todas").textContent=all.length;
+  $("#c-ent").textContent=all.filter(j=>j.status==="Entrevista").length;
+  $("#c-ana").textContent=all.filter(j=>j.status==="Em análise").length;
+  $("#c-fin").textContent=all.filter(j=>["Aprovado","Reprovado","Sem retorno"].includes(j.status)).length;
+
+  const list=all.filter(match).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("#jobs").innerHTML=list.length?list.map(j=>`
+    <div class="job">
+      <div>
+        <h4>${esc(j.title)}</h4>
+        <div class="meta">
+          🏢 ${esc(j.company||"—")}<br>
+          📍 ${esc(j.loc||"—")} &nbsp; 💼 ${esc(j.type||"—")}<br>
+          💰 ${esc(j.salary||"Não informado")}<br>
+          🌐 ${esc(j.platform||"—")} &nbsp;•&nbsp; 📅 Candidatura: ${fmt(j.date)}<br>
+          ${j.interview?`🗓️ Entrevista: <b>${new Date(j.interview).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</b><br>`:""}
+          ${j.notes?`📝 ${esc(j.notes)}`:""}
+        </div>
+      </div>
+      <div class="right">
+        <span class="st" style="background:${COLORS[j.status]}">${j.status}</span>
+        <div class="actions">
+          ${j.url?`<a class="btn ghost sm" href="${esc(j.url)}" target="_blank" rel="noopener">Ver vaga</a>`:""}
+          <button class="btn sm" onclick="edit('${j.id}')">Editar</button>
+        </div>
+      </div>
+    </div>`).join(""):`<div class="card empty">Nenhuma vaga no painel de ${p.label} ainda. Clique em <b>+ Nova candidatura</b>.</div>`;
+
+  const up=all.filter(j=>j.interview&&new Date(j.interview)>=new Date(Date.now()-36e5)).sort((a,b)=>a.interview.localeCompare(b.interview));
+  $("#upcoming").innerHTML=up.length?up.slice(0,6).map(j=>`<div class="up"><b>${esc(j.title)}</b><span>${esc(j.company||"—")} • ${esc(j.platform||"—")}<br>${new Date(j.interview).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</span></div>`).join(""):`<div class="empty">Sem entrevistas agendadas.</div>`;
+  $("#summary").innerHTML=STATUSES.map(s=>`<div class="up" style="border-color:${COLORS[s]}"><b>${s}</b><span>${all.filter(j=>j.status===s).length} vaga(s)</span></div>`).join("");
+}
+
+$("#new").onclick=()=>open_(null);
+$("#cancel").onclick=()=>$("#dlg").close();
+window.edit=id=>{const j=jobs.find(x=>x.id===id); if(j&&j.who===person) open_(j);};
+
+function open_(j){
+  editing=j||null;
+  $("#dlg-title").textContent=j?"Editar candidatura":"Nova candidatura";
+  $("#f-owner").textContent=`${PEOPLE[person].emoji} ${PEOPLE[person].label}`;
+  $("#fetchmsg").textContent="";
+  $("#f-url").value=j?.url||""; $("#f-title").value=j?.title||""; $("#f-company").value=j?.company||"";
+  $("#f-loc").value=j?.loc||""; $("#f-salary").value=j?.salary||""; $("#f-type").value=j?.type||"";
+  $("#f-platform").value=j?.platform||"";
+  $("#f-date").value=j?.date||new Date().toISOString().slice(0,10);
+  $("#f-status").value=j?.status||"Candidatou"; $("#f-interview").value=j?.interview||""; $("#f-notes").value=j?.notes||"";
+  $("#del").style.display=j?"inline-block":"none";
+  $("#dlg").showModal();
+}
+$("#del").onclick=()=>{ if(editing&&confirm("Excluir esta vaga?")){jobs=jobs.filter(x=>x.id!==editing.id);save();render();$("#dlg").close();} };
+$("#form").onsubmit=()=>{
+  const data={id:editing?.id||crypto.randomUUID(),who:editing?.who||person,url:$("#f-url").value.trim(),
+    title:$("#f-title").value.trim(),company:$("#f-company").value.trim(),loc:$("#f-loc").value.trim(),
+    salary:$("#f-salary").value.trim(),type:$("#f-type").value.trim(),
+    platform:$("#f-platform").value.trim()||platformFrom($("#f-url").value),
+    date:$("#f-date").value,status:$("#f-status").value,
+    interview:$("#f-interview").value,notes:$("#f-notes").value.trim()};
+  if(editing){jobs=jobs.map(j=>j.id===data.id?data:j);}else{jobs.push(data);}
+  save();render();
+};
+
+function platformFrom(u){
+  try{const h=new URL(u).hostname.replace("www.","");
+    const map={"indeed":"Indeed","infojobs":"InfoJobs","catho":"Catho","solides":"Sólides","vagas.com":"Vagas.com","linkedin":"LinkedIn","gupy":"Gupy","trampos":"Trampos","glassdoor":"Glassdoor","empregos.com":"Empregos.com.br"};
+    for(const k in map) if(h.includes(k)) return map[k];
+    return h;
+  }catch{return "";}
+}
+const PROXIES=[u=>"https://r.jina.ai/"+u, u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u)];
+
+$("#fetch").onclick=async()=>{
+  const url=$("#f-url").value.trim();
+  if(!url){$("#fetchmsg").textContent="Cole o link da vaga primeiro.";return;}
+  $("#f-platform").value=$("#f-platform").value||platformFrom(url);
+  $("#fetchmsg").textContent="⏳ Lendo a página...";
+  let text="";
+  for(const p of PROXIES){ try{const r=await fetch(p(url)); if(r.ok){text=await r.text(); if(text.length>200)break;}}catch(e){} }
+  if(!text){$("#fetchmsg").innerHTML="⚠️ Não consegui ler esta página (o site bloqueia leitura automática). Preencha os campos manualmente — o link já fica salvo.";return;}
+  const found=parse(text);
+  let filled=0;
+  for(const [k,sel] of [["title","#f-title"],["company","#f-company"],["loc","#f-loc"],["salary","#f-salary"],["type","#f-type"]]){
+    if(found[k] && !$(sel).value){$(sel).value=found[k];filled++;}
+  }
+  $("#fetchmsg").innerHTML=filled?`✅ Encontrei <b>${filled}</b> campo(s). Confira e corrija antes de salvar.`:"⚠️ A página foi lida mas não identifiquei os campos. Preencha manualmente.";
+};
+
+function parse(text){
+  const out={};
+  const ld=[...text.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)];
+  for(const m of ld){
+    try{
+      const flat=[].concat(JSON.parse(m[1]));
+      for(const o of flat){
+        const node=o["@graph"]?[].concat(o["@graph"]).find(x=>/JobPosting/i.test(x["@type"]||"")):o;
+        if(!node||!/JobPosting/i.test(node["@type"]||""))continue;
+        out.title=node.title;
+        out.company=node.hiringOrganization?.name;
+        const l=[].concat(node.jobLocation||[])[0]?.address;
+        if(l) out.loc=[l.addressLocality,l.addressRegion].filter(Boolean).join("/");
+        const s=node.baseSalary?.value;
+        if(s) out.salary=(s.minValue&&s.maxValue)?`R$ ${s.minValue} – R$ ${s.maxValue}`:(s.value?`R$ ${s.value}`:"");
+        if(node.employmentType) out.type=String([].concat(node.employmentType)[0]).replace("FULL_TIME","CLT / Tempo integral").replace("PART_TIME","Meio período").replace("CONTRACTOR","PJ").replace("INTERN","Estágio").replace("TEMPORARY","Temporário");
+      }
+    }catch{}
+  }
+  const grab=re=>{const m=text.match(re);return m?clean(m[1]):"";};
+  out.title=out.title||grab(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||grab(/<h1[^>]*>([\s\S]{2,140}?)<\/h1>/i)||grab(/^#\s+(.{3,140})$/m);
+  out.company=out.company||grab(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)/i);
+  out.salary=out.salary||clean((text.match(/R\$\s?[\d.]+(?:,\d{2})?(?:\s?(?:a|–|-|até)\s?R\$\s?[\d.]+(?:,\d{2})?)?/i)||[""])[0]);
+  if(!out.type){const t=text.match(/\b(CLT|PJ|Estágio|Estagio|Temporário|Aprendiz|Freelance|Home ?office|Híbrido|Presencial)\b/i); if(t)out.type=t[1];}
+  if(!out.loc){const c=text.match(/\b([A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]+(?:\s[A-ZÁÉÍÓÚa-záéíóú]+){0,3})\s*[-\/,]\s*(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)\b/); if(c)out.loc=c[1]+"/"+c[2];}
+  if(out.title) out.title=out.title.split(/[|\-–]\s*(?:Indeed|InfoJobs|Catho|Vagas|LinkedIn)/i)[0].trim();
+  return out;
+}
+const clean=s=>String(s||"").replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim();
+
+$("#export").onclick=()=>{
+  const rows=[["Vaga","Empresa","Local","Salário","Tipo","Plataforma","Status","Candidatura","Entrevista","Link"],
+    ...mine().map(j=>[j.title,j.company,j.loc,j.salary,j.type,j.platform,j.status,j.date,j.interview,j.url])];
+  const csv=rows.map(r=>r.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(";")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
+  a.download=`vagas-${PEOPLE[person].label.toLowerCase()}.csv`;a.click();
+};
+
+loadJobs();
+</script>
+</body>
+</html>
